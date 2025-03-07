@@ -2,17 +2,19 @@ import EditTicketForm from "@/app/(components)/EditTicketForm";
 
 const getTicketById = async (id) => {
   try {
-    const res = await fetch(`http://localhost:3000/api/Tickets/${id}`, {
+    const host = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+    const res = await fetch(`${host}/api/Tickets/${id}`, {
       cache: "no-store",
     });
 
     if (!res.ok) {
-      throw new Error("Failed to fetch topic");
+      throw new Error("Failed to fetch ticket");
     }
 
     return res.json();
   } catch (error) {
     console.log(error);
+    return null;
   }
 };
 
@@ -22,10 +24,13 @@ const TicketPage = async ({ params }) => {
 
   if (EDITMODE) {
     updateTicketData = await getTicketById(params.id);
+    if (!updateTicketData || !updateTicketData.foundTicket) {
+      return <div className="p-5">Ticket not found</div>;
+    }
     updateTicketData = updateTicketData.foundTicket;
   } else {
     updateTicketData = {
-      _id: "new",
+      id: "new",
     };
   }
 

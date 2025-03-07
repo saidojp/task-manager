@@ -2,15 +2,47 @@
 @tailwind components;
 @tailwind utilities;
 
-html,
-body {
-  margin: 0;
-  padding: 0;
-  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
-    "Lucida Sans", Arial, sans-serif;
-}
-
 @layer base {
+  :root {
+    --color-background: theme("colors.light-secondary");
+    --color-foreground: theme("colors.light-text");
+    --color-card: theme("colors.light-primary");
+    --color-card-foreground: theme("colors.light-text");
+    --color-card-hover: theme("colors.light-accent");
+    --color-muted: theme("colors.light-accent");
+    --color-muted-foreground: theme("colors.light-muted");
+    --color-border: theme("colors.light-border");
+    --color-border-hover: theme("colors.light-muted");
+    --color-primary-red: theme("colors.light-red-accent");
+
+    --gradient-primary: theme("backgroundImage.gradient-primary-light");
+    --gradient-secondary: theme("backgroundImage.gradient-secondary-light");
+    --gradient-accent: theme("backgroundImage.gradient-accent-light");
+    --gradient-red: theme("backgroundImage.gradient-red-light");
+
+    --shadow-card: theme("boxShadow.card-light");
+  }
+
+  .dark {
+    --color-background: theme("colors.dark-primary");
+    --color-foreground: theme("colors.dark-text");
+    --color-card: theme("colors.dark-secondary");
+    --color-card-foreground: theme("colors.dark-text");
+    --color-card-hover: theme("colors.dark-accent");
+    --color-muted: theme("colors.dark-secondary");
+    --color-muted-foreground: theme("colors.dark-muted");
+    --color-border: theme("colors.dark-border");
+    --color-border-hover: theme("colors.dark-muted");
+    --color-primary-red: theme("colors.dark-red-accent");
+
+    --gradient-primary: theme("backgroundImage.gradient-primary-dark");
+    --gradient-secondary: theme("backgroundImage.gradient-secondary-dark");
+    --gradient-accent: theme("backgroundImage.gradient-accent-dark");
+    --gradient-red: theme("backgroundImage.gradient-red-dark");
+
+    --shadow-card: theme("boxShadow.card-dark");
+  }
+
   h1,
   h2,
   h3,
@@ -21,42 +53,93 @@ body {
   }
 
   h1 {
-    @apply text-4xl;
+    @apply text-4xl leading-tight;
     margin: 0 0 5px 0;
   }
   h2 {
-    @apply text-3xl;
+    @apply text-3xl leading-tight;
   }
   h3 {
-    @apply text-2xl;
+    @apply text-2xl leading-snug;
   }
   h4 {
-    @apply text-xl;
+    @apply text-xl leading-snug;
   }
   h5 {
     @apply text-lg;
   }
   p {
-    @apply text-sm;
+    @apply text-base leading-relaxed;
   }
   form {
-    @apply  rounded-xl p-4
+    @apply rounded-xl p-6 bg-card shadow-card;
   }
   label {
-    @apply mt-4
+    @apply block mt-4 mb-1 text-sm font-medium;
   }
   input,
   select,
   textarea {
-    @apply m-1 rounded  bg-card p-1;
+    @apply w-full px-3 py-2 rounded-md bg-background border border-border focus:outline-none focus:ring-2 focus:ring-accent-1 focus:border-transparent transition-colors;
   }
 }
 
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  @apply bg-background text-foreground transition-colors duration-200;
+}
+
 @layer components {
-  .icon {
-    @apply  text-default-text text-xl;
+  .btn-primary {
+    @apply px-4 py-2 rounded-md bg-dark-red-accent text-white font-medium hover:bg-dark-red-accent/90 transition-colors shadow-sm;
   }
-  .btn {
-    @apply  hover:no-underline bg-blue-accent tracking-wider w-full text-center text-nav font-bold cursor-pointer uppercase px-4 py-2 rounded-md hover:bg-blue-accent-hover transition-colors block;
+
+  .btn-secondary {
+    @apply px-4 py-2 rounded-md bg-card border border-border hover:bg-card-hover transition-colors;
   }
+
+  .btn-accent {
+    @apply px-4 py-2 rounded-md bg-accent-5 text-white font-medium hover:bg-accent-5/90 transition-colors shadow-sm;
+  }
+
+  .card {
+    @apply bg-card rounded-xl shadow-card border border-border overflow-hidden transition-all duration-200;
+  }
+
+  .card-header {
+    @apply p-4 border-b border-border;
+  }
+
+  .card-body {
+    @apply p-4;
+  }
+
+  .badge {
+    @apply px-2 py-1 text-xs font-medium rounded-full;
+  }
+
+  .nav-item {
+    @apply px-3 py-2 rounded-md hover:bg-card-hover transition-colors;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-background;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-muted rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-muted-foreground;
 }

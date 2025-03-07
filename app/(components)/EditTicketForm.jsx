@@ -1,9 +1,11 @@
 "use client";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import Link from "next/link";
+import { ArrowLeftIcon, CheckIcon, Cross1Icon } from "@radix-ui/react-icons";
 
 const EditTicketForm = ({ ticket }) => {
-  const EDITMODE = ticket._id === "new" ? false : true;
+  const EDITMODE = ticket.id === "new" ? false : true;
   const router = useRouter();
   const startingTicketData = {
     title: "",
@@ -11,7 +13,7 @@ const EditTicketForm = ({ ticket }) => {
     priority: 1,
     progress: 0,
     status: "not started",
-    category: "Hardware Problem",
+    category: "Work",
   };
 
   if (EDITMODE) {
@@ -39,7 +41,8 @@ const EditTicketForm = ({ ticket }) => {
     e.preventDefault();
 
     if (EDITMODE) {
-      const res = await fetch(`/api/Tickets/${ticket._id}`, {
+      const host = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+      const res = await fetch(`${host}/api/Tickets/${ticket.id}`, {
         method: "PUT",
         headers: {
           "Content-type": "application/json",
@@ -50,11 +53,13 @@ const EditTicketForm = ({ ticket }) => {
         throw new Error("Failed to update ticket");
       }
     } else {
-      const res = await fetch("/api/Tickets", {
+      const host = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+      const res = await fetch(`${host}/api/Tickets`, {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({ formData }),
-        //@ts-ignore
-        "Content-Type": "application/json",
       });
       if (!res.ok) {
         throw new Error("Failed to create ticket");
@@ -65,121 +70,161 @@ const EditTicketForm = ({ ticket }) => {
     router.push("/");
   };
 
-  const categories = [
-    "Hardware Problem",
-    "Software Problem",
-    "Application Deveopment",
-    "Project",
-  ];
+  const categories = ["Work", "Study", "Hobby", "Project", "Uncategorized"];
 
   return (
-    <div className=" flex justify-center">
-      <form
-        onSubmit={handleSubmit}
-        method="post"
-        className="flex flex-col gap-3 w-1/2"
-      >
-        <h3>{EDITMODE ? "Update Your Ticket" : "Create New Ticket"}</h3>
-        <label>Title</label>
-        <input
-          id="title"
-          name="title"
-          type="text"
-          onChange={handleChange}
-          required={true}
-          value={formData.title}
-        />
-        <label>Description</label>
-        <textarea
-          id="description"
-          name="description"
-          onChange={handleChange}
-          required={true}
-          value={formData.description}
-          rows="5"
-        />
-        <label>Category</label>
-        <select
-          name="category"
-          value={formData.category}
-          onChange={handleChange}
-        >
-          {categories?.map((category, _index) => (
-            <option key={_index} value={category}>
-              {category}
-            </option>
-          ))}
-        </select>
+    <div className="max-w-3xl mx-auto w-full p-4">
+      {/* Header */}
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold">
+          {EDITMODE ? "Edit Ticket" : "Create New Ticket"}
+        </h1>
+        <p className="text-muted-foreground mt-1">
+          {EDITMODE
+            ? "Update the details of your existing ticket"
+            : "Fill in the details to create a new ticket"}
+        </p>
+      </div>
 
-        <label>Priority</label>
-        <div>
-          <input
-            id="priority-1"
-            name="priority"
-            type="radio"
-            onChange={handleChange}
-            value={1}
-            checked={formData.priority == 1}
-          />
-          <label>1</label>
-          <input
-            id="priority-2"
-            name="priority"
-            type="radio"
-            onChange={handleChange}
-            value={2}
-            checked={formData.priority == 2}
-          />
-          <label>2</label>
-          <input
-            id="priority-3"
-            name="priority"
-            type="radio"
-            onChange={handleChange}
-            value={3}
-            checked={formData.priority == 3}
-          />
-          <label>3</label>
-          <input
-            id="priority-4"
-            name="priority"
-            type="radio"
-            onChange={handleChange}
-            value={4}
-            checked={formData.priority == 4}
-          />
-          <label>4</label>
-          <input
-            id="priority-5"
-            name="priority"
-            type="radio"
-            onChange={handleChange}
-            value={5}
-            checked={formData.priority == 5}
-          />
-          <label>5</label>
+      {/* Form */}
+      <form onSubmit={handleSubmit} method="post" className="space-y-6">
+        <div className="space-y-4">
+          {/* Title */}
+          <div>
+            <label htmlFor="title" className="block font-medium">
+              Title
+            </label>
+            <input
+              id="title"
+              name="title"
+              type="text"
+              onChange={handleChange}
+              required={true}
+              value={formData.title}
+              placeholder="Brief summary of the issue"
+              className="mt-1"
+            />
+          </div>
+
+          {/* Description */}
+          <div>
+            <label htmlFor="description" className="block font-medium">
+              Description
+            </label>
+            <textarea
+              id="description"
+              name="description"
+              onChange={handleChange}
+              required={true}
+              value={formData.description}
+              placeholder="Detailed explanation of the issue or task"
+              rows={5}
+              className="mt-1"
+            />
+          </div>
+
+          {/* Two column layout for smaller inputs */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Category */}
+            <div>
+              <label htmlFor="category" className="block font-medium">
+                Category
+              </label>
+              <select
+                id="category"
+                name="category"
+                onChange={handleChange}
+                value={formData.category}
+                className="mt-1"
+              >
+                {categories.map((category, index) => (
+                  <option key={index} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Priority */}
+            <div>
+              <label htmlFor="priority" className="block font-medium">
+                Priority
+              </label>
+              <select
+                id="priority"
+                name="priority"
+                onChange={handleChange}
+                value={formData.priority}
+                className="mt-1"
+              >
+                <option value={1}>Low</option>
+                <option value={2}>Low Medium</option>
+                <option value={3}>Medium</option>
+                <option value={4}>Medium High</option>
+                <option value={5}>High</option>
+              </select>
+            </div>
+
+            {/* Progress */}
+            <div>
+              <label htmlFor="progress" className="block font-medium">
+                Progress (%)
+              </label>
+              <input
+                id="progress"
+                name="progress"
+                type="range"
+                min="0"
+                max="100"
+                onChange={handleChange}
+                value={formData.progress}
+                className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-accent-1 mt-2"
+              />
+              <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                <span>0%</span>
+                <span>{formData.progress}%</span>
+                <span>100%</span>
+              </div>
+            </div>
+
+            {/* Status */}
+            <div>
+              <label htmlFor="status" className="block font-medium">
+                Status
+              </label>
+              <select
+                id="status"
+                name="status"
+                onChange={handleChange}
+                value={formData.status}
+                className="mt-1"
+              >
+                <option value="not started">Not Started</option>
+                <option value="started">In Progress</option>
+                <option value="done">Completed</option>
+              </select>
+            </div>
+          </div>
         </div>
-        <label>Progress</label>
-        <input
-          type="range"
-          id="progress"
-          name="progress"
-          value={formData.progress}
-          min="0"
-          max="100"
-          onChange={handleChange}
-        />
-        <label>Status</label>
-        <select name="status" value={formData.status} onChange={handleChange}>
-          <option value="not started">Not Started</option>
-          <option value="started">Started</option>
-          <option value="done">Done</option>
-        </select>
-        <input
-          type="submit"
-          className="btn max-w-xs"
-          value={EDITMODE ? "Update Ticket" : "Create Ticket"}
-        />
+
+        {/* Actions */}
+        <div className="flex items-center justify-between pt-6 border-t border-border">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 px-4 py-2 bg-card text-foreground border border-border rounded-md hover:bg-card-hover transition-colors"
+          >
+            <ArrowLeftIcon className="w-4 h-4" />
+            <span>Cancel</span>
+          </Link>
+
+          <button
+            type="submit"
+            className="inline-flex items-center gap-1.5 px-4 py-2 bg-dark-red-accent text-white rounded-md hover:bg-dark-red-accent/90 transition-colors"
+          >
+            <CheckIcon className="w-4 h-4" />
+            <span>{EDITMODE ? "Update Ticket" : "Create Ticket"}</span>
+          </button>
+        </div>
       </form>
     </div>
   );

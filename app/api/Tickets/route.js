@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    const tickets = await Ticket.find();
+    const tickets = await Ticket.getAllTickets();
 
     return NextResponse.json({ tickets }, { status: 200 });
   } catch (err) {
@@ -17,7 +17,7 @@ export async function POST(req) {
     const body = await req.json();
     const ticketData = body.formData;
 
-    await Ticket.create(ticketData);
+    await Ticket.createTicket(ticketData);
 
     return NextResponse.json({ message: "Ticket Created" }, { status: 201 });
   } catch (err) {

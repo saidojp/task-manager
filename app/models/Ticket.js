@@ -1,23 +1,7 @@
-import mongoose, { Schema } from "mongoose";
+// This file now acts as a wrapper around the SQLite database functions
+// No actual model definition is needed since we're using SQL directly
 
-mongoose.connect(process.env.MONGODB_URI);
-mongoose.Promise = global.Promise;
+// Re-export the database functions
+import db from "../lib/db";
 
-const ticketSchema = new Schema(
-  {
-    title: String,
-    description: String,
-    category: String,
-    priority: Number,
-    progress: Number,
-    status: String,
-    active: Boolean,
-  },
-  {
-    timestamps: true,
-  }
-);
-
-const Ticket = mongoose.models.Ticket || mongoose.model("Ticket", ticketSchema);
-
-export default Ticket;
+export default db;
